@@ -39,6 +39,7 @@ public class TokenCache {
             {
                 return null;
             }
+            return value;
         } catch (ExecutionException e) {
             logger.error("localCache get error", e);
         }

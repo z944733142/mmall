@@ -64,7 +64,7 @@
     delete from mmall_user
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="int" >
+  <insert id="insert" parameterType="com.mmall.pojo.User" >
     insert into mmall_user (id, username, password, 
       email, phone, question, 
       answer, role, create_time, 
@@ -189,7 +189,7 @@
   </update>
   <update id="updatePasswordByUsername" parameterType="map">
     update mmall_user
-    set  password = #{passwordNew}, updaye_time = now()
+    set  password = #{passwordNew}, update_time = now()
     where username = #{username};
   </update>
 </mapper>

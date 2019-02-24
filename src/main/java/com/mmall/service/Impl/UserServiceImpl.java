@@ -47,7 +47,7 @@ public class UserServiceImpl implements IUserService {
         {
             return Vaild;
         }
-        Vaild = this.checkValid(user.getUsername(), Const.EMAiL);
+        Vaild = this.checkValid(user.getEmail(), Const.EMAiL);
         if(!Vaild.isSuccess())
         {
             return Vaild;
@@ -57,7 +57,7 @@ public class UserServiceImpl implements IUserService {
 
         //MD5加密
         user.setPassword(MD5Util.MD5EncodeUtf8(user.getPassword()));
-
+        System.out.println(user);
         int resultCount = userMapper.insert(user);
 
         if(resultCount == 0)
@@ -69,9 +69,9 @@ public class UserServiceImpl implements IUserService {
 
     public ServiceResponse<String> checkValid(String str, String type)
     {
-        if (StringUtils.isNoneBlank())
+        if (StringUtils.isNotBlank(type))
         {
-            if(Const.EMAiL.equals(type))
+            if(Const.USERNAME.equals(type))
             {
                 int resultCount = userMapper.checkUserName(str);
                 if(resultCount > 0)
@@ -79,7 +79,7 @@ public class UserServiceImpl implements IUserService {
                     return ServiceResponse.createByErrorMessage("用户名已存在");
                 }
             }
-            if(Const.USERNAME.equals(type))
+            if(Const.EMAiL.equals(type))
             {
                 int resultCount = userMapper.checkEmail(str);
                 if(resultCount > 0)
@@ -87,7 +87,6 @@ public class UserServiceImpl implements IUserService {
                     return ServiceResponse.createByErrorMessage("email已存在");
                 }
             }
-
         }else
         {
             return ServiceResponse.createByErrorMessage("参数错误");
@@ -120,7 +119,9 @@ public class UserServiceImpl implements IUserService {
         if(resultCount > 0)
         {
             String forgetToken = UUID.randomUUID().toString();
+            System.out.println(forgetToken);
             TokenCache.setKey(TokenCache.TOKEN_PREFIX + username, forgetToken);
+            System.out.println(TokenCache.getKey(TokenCache.TOKEN_PREFIX + username));
             return ServiceResponse.createBySuccess(forgetToken);
         }
         return ServiceResponse.createByErrorMessage("问题答案错误");
@@ -139,7 +140,7 @@ public class UserServiceImpl implements IUserService {
             return ServiceResponse.createByErrorMessage("用户不存在");
         }
         String token = TokenCache.getKey(TokenCache.TOKEN_PREFIX + username);
-
+        System.out.println("token=" + token);
         if(StringUtils.isBlank(token))
         {
             return ServiceResponse.createBySuccessMessage("token无效或者过期");
@@ -207,4 +208,18 @@ public class UserServiceImpl implements IUserService {
         user.setPassword(StringUtils.EMPTY);
         return ServiceResponse.createBySuccess(user);
     }
+
+    //backnd
+
+    public ServiceResponse checkAdminRole(User user)
+    {
+        if(user != null && user.getRole() == Const.Role.ROLE_ADMIN)
+        {
+            return ServiceResponse.createBySuccess();
+        }else
+        {
+            return ServiceResponse.createByError();
+        }
+    }
+
 }
